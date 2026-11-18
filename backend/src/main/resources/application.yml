@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: logismart
+  datasource:
+    url: jdbc:h2:mem:logismart;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    # Au moins 32 caractères. À surcharger en production via JWT_SECRET.
+    secret: ${JWT_SECRET:logismart-dev-secret-change-me-please-0123456789}
+    expiration-hours: 8
+  cors:
+    origins: ${CORS_ORIGINS:http://localhost:4200}
+  seed:
+    enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

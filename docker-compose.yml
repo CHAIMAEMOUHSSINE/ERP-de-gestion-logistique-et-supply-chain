@@ -1,0 +1,41 @@
+# Lancement : docker compose up --build
+# Frontend : http://localhost:4200   API : http://localhost:8080   Swagger : http://localhost:8080/swagger-ui.html
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: logismart
+      POSTGRES_USER: logismart
+      POSTGRES_PASSWORD: logismart
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U logismart"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_URL: jdbc:postgresql://db:5432/logismart
+      DB_USER: logismart
+      DB_PASSWORD: logismart
+      CORS_ORIGINS: http://localhost:4200
+      JWT_SECRET: changez-moi-par-une-longue-valeur-secrete-0123456789
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+
+volumes:
+  pgdata:
